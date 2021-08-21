@@ -4,7 +4,7 @@ This extension adds a tree view to the test view container. It shows the coverag
 
 ## Features
 
-![Demo](https://raw.githubusercontent.com/tenninebt/vscode-koverage/master/Capture.gif)
+![Demo](https://github.com/Flutterando/flutter-coverage/vscode-koverage/master/Capture.gif)
 
 ## Extension Settings
 
