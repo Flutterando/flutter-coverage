@@ -1,0 +1,24 @@
+.vscode/**
+.vscode-test/**
+out/test/**
+src/**
+.gitignore
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/tslint.json
+**/*.map
+**/*.ts
+
+# Extra file to ignore
+webpack.config.json
+tsconfig.json
+.github/
+azure-pipelines.yml
+.azure-pipelines/
+node_modules/**/test/**
+node_modules
+src/
+out/
+out-cov/
+coverage/

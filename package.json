@@ -1,0 +1,126 @@
+{
+	"name": "flutter-coverage",
+	"version": "0.0.1",
+	"publisher": "flutterando",
+	"displayName": "Flutter Coverage",
+	"keywords": [
+		"coverage",
+		"lcov"
+	],
+	"repository": "https://github.com/Flutterando/flutter-coverage",
+	"description": "VSCeode Extension for view the code coverage per folder/file in the test view",
+	"engines": {
+		"vscode": "^1.44.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"icon": "resources/icon.png",
+	"activationEvents": [
+		"onView:flutter-coverage"
+	],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "Flutter Coverage",
+			"properties": {
+				"flutter-coverage.coverageFileNames": {
+					"type": "array",
+					"default": [
+						"lcov.info",
+						"cov.xml",
+						"coverage.xml",
+						"jacoco.xml"
+					],
+					"description": "coverage file names for the extension to automatically look for"
+				},
+				"flutter-coverage.coverageFilePaths": {
+					"type": "array",
+					"default": [
+						"coverage"
+					],
+					"description": "coverage file paths for the extensions to automatically search in"
+				},
+				"flutter-coverage.lowCoverageThreshold": {
+					"type": "number",
+					"default": 50,
+					"description": "coverage threshold considered too low"
+				},
+				"flutter-coverage.sufficientCoverageThreshold": {
+					"type": "number",
+					"default": 70,
+					"description": "coverage threshold considered sufficient"
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "flutter-coverage.refresh",
+				"title": "Refresh",
+				"icon": {
+					"dark": "resources/dark/refresh.svg",
+					"light": "resources/light/refresh.svg"
+				}
+			},
+			{
+				"command": "flutter-coverage.openFile",
+				"title": "Open"
+			}
+		],
+		"views": {
+			"test": [
+				{
+					"id": "flutter-coverage",
+					"name": "Flutter Coverage"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "flutter-coverage.refresh",
+					"when": "view == flutter-coverage",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "flutter-coverage.openFile",
+					"when": "view == flutter-coverage && viewItem == flutter-coverage"
+				}
+			]
+		}
+	},
+	"extensionDependencies": [
+		"sergelamikhov.lcov-lang"
+	],
+	"scripts": {
+		"vscode:prepublish": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"@types/vscode": "^1.44.0",
+		"@typescript-eslint/eslint-plugin": "^2.26.0",
+		"@typescript-eslint/parser": "^2.26.0",
+		"eslint": "^6.8.0",
+		"mocha": "^7.1.1",
+		"ts-loader": "^7.0.1",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0",
+		"webpack": "^5.51.1",
+		"webpack-cli": "^3.3.12"
+	},
+	"dependencies": {
+		"@cvrg-report/clover-json": "^0.3.0",
+		"@vscode-logging/logger": "^1.2.2",
+		"cobertura-parse": "github:vokal/cobertura-parse#53109a6",
+		"jacoco-parse": "2.0.1",
+		"lcov-parse": "1.0.0",
+		"rxjs": "^6.5.5"
+	}
+}

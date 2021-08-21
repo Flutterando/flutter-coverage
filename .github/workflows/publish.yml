@@ -1,0 +1,33 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Publish
+
+# Controls when the action will run. 
+on:
+  push:
+    tags:
+      - "*"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 8
+      - run: npm install
+      - name: Publish to Open VSX Registry
+        uses: HaaLeo/publish-vscode-extension@v0
+        id: publishToOpenVSX
+        with:
+          pat: ${{ secrets.OPEN_VSX_TOKEN }}
+      - name: Publish to VS Code Marketplace
+        uses: HaaLeo/publish-vscode-extension@v0
+        with:
+          pat: ${{ secrets.VSCODE_MARKETPLACE_TOKEN }}
+          registryUrl: https://marketplace.visualstudio.com
+          extensionFile: ${{ steps.publishToOpenVSX.outputs.vsixPath }}
+          packagePath: ''
