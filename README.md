@@ -2,6 +2,13 @@
 
 This extension adds a tree view to the test view container. It shows the coverage per file/folder.
 
+## First
+
+* Don't forget:
+```
+flutter test --coverage
+```
+
 ## Features
 
 ![Demo](https://github.com/Flutterando/flutter-coverage/blob/master/Capture.gif?raw=true)
