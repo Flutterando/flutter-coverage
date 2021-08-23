@@ -7,6 +7,7 @@ import { FilesLoader } from './files-loader';
 import { ConfigStore } from './config-store';
 import * as vscodeLogging from '@vscode-logging/logger';
 
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -38,7 +39,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	// --- Commands
+	let runTestCoverage = vscode.commands.registerCommand('flutter-coverage.runTestCoverage', () => fileCoverageDataProvider.runTestCoverage());
+
+	let clearCoverage = vscode.commands.registerCommand('flutter-coverage.clearCoverage', () => fileCoverageDataProvider.clearCoverage());
+
 	let refresh = vscode.commands.registerCommand('flutter-coverage.refresh', () => fileCoverageDataProvider.refresh('<RefreshCommand>'));
+
 	//TODO fix this command
 	let openFile = vscode.commands.registerCommand('flutter-coverage.openFile', (node: CoverageNode) => {
 		if (node.command && node.command.arguments) {
@@ -46,6 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	context.subscriptions.push(runTestCoverage);
+	context.subscriptions.push(clearCoverage);
 	context.subscriptions.push(refresh);
 	context.subscriptions.push(openFile);
 	context.subscriptions.push(treeView);

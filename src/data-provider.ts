@@ -1,6 +1,7 @@
 import * as vscodeLogging from '@vscode-logging/logger';
 import * as iopath from 'path';
 import * as vscode from 'vscode';
+import * as cp from 'child_process';
 import { ConfigStore } from './config-store';
 import { CoverageParser } from './coverage-parser';
 import { FilesLoader } from './files-loader';
@@ -10,7 +11,7 @@ export class FileCoverageDataProvider implements vscode.TreeDataProvider<Coverag
 
     private coverageWatcher: vscode.FileSystemWatcher;
 
-    private readonly rootNodeKey:string = '';
+    private readonly rootNodeKey: string = '';
 
     constructor(
         private readonly configStore: ConfigStore,
@@ -102,7 +103,7 @@ export class FileCoverageDataProvider implements vscode.TreeDataProvider<Coverag
             nodesMap.set(workspaceFolderNode.label, workspaceFolderNode);
 
             for (const [codeFilePath, coverageData] of workspaceFolderCoverage.coverage) {
-                
+
                 let pathSteps = codeFilePath.split(iopath.sep);
                 let parentNodePath = workspaceFolderNode.label; //Path in the visual tree
                 let parentRelativeFilePath = ''; //Physical path relative to the workspace folder
@@ -144,6 +145,27 @@ export class FileCoverageDataProvider implements vscode.TreeDataProvider<Coverag
     refresh(reason: string): void {
         this.logger.debug(`Refreshing due to ${reason}...`);
         this._onDidChangeTreeData.fire();
+    }
+
+    runTestCoverage(): void {
+        if (vscode.workspace.workspaceFolders !== undefined) {
+            let rootProjectPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+            cp.exec(`cd ${rootProjectPath} && flutter test --coverage`, (err, out) => {
+                if (err) {
+                    this.logger.error(err.toString());
+                }
+                this.logger.info(out);
+            });
+        }
+    }
+
+    clearCoverage(): void {
+        if (vscode.workspace.workspaceFolders !== undefined) {
+            let rootProjectPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+            let coveragePath = iopath.join(rootProjectPath, `${this.configStore.current.coverageFilePaths}`);
+            vscode.workspace.fs.delete(vscode.Uri.parse(coveragePath), { recursive: true });
+            this.logger.info('Cleaning coverage workspace with success')
+        }
     }
 }
 
