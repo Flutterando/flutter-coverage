@@ -1,6 +1,6 @@
 {
 	"name": "flutter-coverage",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"publisher": "flutterando",
 	"displayName": "Flutter Coverage",
 	"keywords": [
@@ -55,6 +55,22 @@
 		},
 		"commands": [
 			{
+				"command": "flutter-coverage.runTestCoverage",
+				"title": "Run Test Coverage",
+				"icon": {
+					"dark": "resources/dark/play-circle.svg",
+					"light": "resources/light/play-circle.svg"
+				}
+			},
+			{
+				"command": "flutter-coverage.clearCoverage",
+				"title": "Clear Coverage",
+				"icon": {
+					"dark": "resources/dark/trash.svg",
+					"light": "resources/light/trash.svg"
+				}
+			},
+			{
 				"command": "flutter-coverage.refresh",
 				"title": "Refresh",
 				"icon": {
@@ -77,6 +93,16 @@
 		},
 		"menus": {
 			"view/title": [
+				{
+					"command": "flutter-coverage.runTestCoverage",
+					"when": "view == flutter-coverage",
+					"group": "navigation"
+				},
+				{
+					"command": "flutter-coverage.clearCoverage",
+					"when": "view == flutter-coverage",
+					"group": "navigation"
+				},
 				{
 					"command": "flutter-coverage.refresh",
 					"when": "view == flutter-coverage",
@@ -121,6 +147,7 @@
 		"cobertura-parse": "github:vokal/cobertura-parse#53109a6",
 		"jacoco-parse": "2.0.1",
 		"lcov-parse": "1.0.0",
-		"rxjs": "^6.5.5"
+		"rxjs": "^6.5.5",
+		"vsce": "^1.96.1"
 	}
 }
