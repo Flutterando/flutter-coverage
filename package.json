@@ -96,17 +96,17 @@
 				{
 					"command": "flutter-coverage.runTestCoverage",
 					"when": "view == flutter-coverage",
-					"group": "navigation"
+					"group": "navigation@1"
 				},
 				{
 					"command": "flutter-coverage.clearCoverage",
 					"when": "view == flutter-coverage",
-					"group": "navigation"
+					"group": "navigation@2"
 				},
 				{
 					"command": "flutter-coverage.refresh",
 					"when": "view == flutter-coverage",
-					"group": "navigation"
+					"group": "navigation@3"
 				}
 			],
 			"view/item/context": [

@@ -2,6 +2,7 @@ import * as vscodeLogging from '@vscode-logging/logger';
 import * as iopath from 'path';
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
+import * as fs from 'fs';
 import { ConfigStore } from './config-store';
 import { CoverageParser } from './coverage-parser';
 import { FilesLoader } from './files-loader';
@@ -150,12 +151,31 @@ export class FileCoverageDataProvider implements vscode.TreeDataProvider<Coverag
     runTestCoverage(): void {
         if (vscode.workspace.workspaceFolders !== undefined) {
             let rootProjectPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-            cp.exec(`cd ${rootProjectPath} && flutter test --coverage`, (err, out) => {
-                if (err) {
-                    this.logger.error(err.toString());
-                }
-                this.logger.info(out);
-            });
+            if (fs.existsSync(rootProjectPath + '/test')) {
+
+                vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: "Running Test coverage...",
+                    cancellable: true
+                }, (_, token) => {
+                    token.onCancellationRequested(() => {
+                        console.log("User canceled the long running operation");
+                    });
+
+                    const result = new Promise<String>((resolve, reject) => {
+                        cp.exec(`cd ${rootProjectPath} && flutter test --coverage`, (err, out) => {
+                            if (err) {
+                                return reject(err);
+                            }
+                            return resolve(out);
+                        });
+                    });
+
+                    return result;
+                });
+            } else {
+                this.logger.info('Directory not found');
+            }
         }
     }
 
