@@ -1,5 +1,5 @@
 import * as vscodeLogging from '@vscode-logging/logger';
-import * as fs from 'fs';
+import * as glob from 'glob';
 import { readFile } from "fs";
 import * as iopath from "path";
 import * as vscode from 'vscode';
@@ -30,15 +30,16 @@ export class FilesLoader {
             for (const workspaceFolder of vscode.workspace.workspaceFolders) {
                 for (const filePath of filesPaths) {
                     for (const fileName of fileNames) {
+                        const testPath = iopath.join(filePath, fileName);
+                        const coveragePaths: string[] = glob.sync(testPath, { cwd: workspaceFolder.uri.fsPath }) || [];
+                        this.logger.debug(`total files found: ${coveragePaths.length}`);
 
-                        const coverageFileFullPath = iopath.join(workspaceFolder.uri.fsPath, filePath, fileName);
-
-                        if (fs.existsSync(coverageFileFullPath) && fs.lstatSync(coverageFileFullPath).isFile()) {
-
-                            if (!coverageFiles.has(workspaceFolder.uri.fsPath)){
-                                coverageFiles.set(workspaceFolder.uri.fsPath, new WorkspaceFolderCoverageFiles(workspaceFolder));
-                            }
-                            coverageFiles.get(workspaceFolder.uri.fsPath)?.coverageFiles.add(new WorkspaceFolderCoverageFile(coverageFileFullPath, await this.load(coverageFileFullPath)));
+                        if (!!coveragePaths.length && !coverageFiles.has(workspaceFolder.uri.fsPath)){
+                            coverageFiles.set(workspaceFolder.uri.fsPath, new WorkspaceFolderCoverageFiles(workspaceFolder));
+                        }
+                        for (const coveragePath of coveragePaths) {
+                            const filePath = iopath.join(workspaceFolder.uri.fsPath, coveragePath);
+                            coverageFiles.get(workspaceFolder.uri.fsPath)?.coverageFiles.add(new WorkspaceFolderCoverageFile(filePath, await this.load(filePath)));
                         }
                     }
                 }

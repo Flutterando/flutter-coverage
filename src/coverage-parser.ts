@@ -60,19 +60,24 @@ export class CoverageParser {
 
     private recomputeStats(data: any[] ) {
         data.forEach((section) => {
-            if(!section.hit || !section.found){
+            if(!section.lines.hit || !section.lines.found){
                 section.lines.hit = section.lines.details.reduce((a, b) => a + (b.hit > 0 ? 1 : 0), 0);
                 section.lines.found = section.lines.details.length;
             }
         });
     }
 
-    private async convertSectionsToMap(workspaceFolder: vscode.WorkspaceFolder, data: Section[]): Promise<Map<string, Section>> {
+    private async convertSectionsToMap(workspaceFolder: vscode.WorkspaceFolder, filename: string, data: Section[]): Promise<Map<string, Section>> {
+        this.recomputeStats(data);
+
         const sections = new Map<string, Section>();
         const addToSectionsMap = async (section: { title: string; file: string; }) => {
-            this.recomputeStats(data);
+            const intermediatePath = this.stripPath(filename);
             let filePath = section.file;
-            if(iopath.isAbsolute(section.file)){
+            if (!!intermediatePath) {
+                filePath = iopath.join(intermediatePath, filePath);
+            }
+            if(iopath.isAbsolute(section.file) || filePath.includes(workspaceFolder.uri.fsPath)){
                 //Convert to a path relative to the workspace root
                 filePath = filePath.replace(workspaceFolder.uri.fsPath, "");
             }
@@ -100,7 +105,7 @@ export class CoverageParser {
             try {
                 parseContentCobertura(xmlFile, async (err: any, data: any[]) => {
                     checkError(err);
-                    const sections = await this.convertSectionsToMap(workspaceFolder, data);
+                    const sections = await this.convertSectionsToMap(workspaceFolder, filename, data);
                     return resolve(sections);
                 }, true);
             } catch (error) {
@@ -122,7 +127,7 @@ export class CoverageParser {
             try {
                 parseContentJacoco(xmlFile, async (err: any, data: any[]) => {
                     checkError(err);
-                    const sections = await this.convertSectionsToMap(workspaceFolder, data);
+                    const sections = await this.convertSectionsToMap(workspaceFolder, filename, data);
                     return resolve(sections);
                 });
             } catch (error) {
@@ -134,7 +139,7 @@ export class CoverageParser {
     private async xmlExtractClover(workspaceFolder: vscode.WorkspaceFolder, filename: string, xmlFile: string) {
         try {
             const data = await parseContentClover(xmlFile);
-            const sections = await this.convertSectionsToMap(workspaceFolder, data);
+            const sections = await this.convertSectionsToMap(workspaceFolder, filename, data);
             return sections;
         } catch (error) {
             error.message = `filename: ${filename} ${error.message}`;
@@ -156,7 +161,7 @@ export class CoverageParser {
             try {
                 source(lcovFile, async (err: Error, data: any[]) => {
                     checkError(err);
-                    const sections = await this.convertSectionsToMap(workspaceFolder, data);
+                    const sections = await this.convertSectionsToMap(workspaceFolder, filename, data);
                     return resolve(sections);
                 });
             } catch (error) {
@@ -171,5 +176,10 @@ export class CoverageParser {
         this.logger.error(
             `[${Date.now()}][coverageparser][${system}]: Error: ${message}\n${stackTrace}`,
         );
+    }
+
+    // Removes the coverage dir and file from coverage path
+    private stripPath(filename: String) {
+        return (filename || '').split('/').slice(0, -2).join('/');
     }
 }
