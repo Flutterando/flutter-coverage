@@ -184,7 +184,7 @@ export class FileCoverageDataProvider implements vscode.TreeDataProvider<Coverag
             let rootProjectPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
             let coveragePath = iopath.join(rootProjectPath, `${this.configStore.current.coverageFilePaths}`);
             vscode.workspace.fs.delete(vscode.Uri.parse(coveragePath), { recursive: true });
-            this.logger.info('Cleaning coverage workspace with success')
+            this.logger.info('Cleaning coverage workspace with success');
         }
     }
 }
