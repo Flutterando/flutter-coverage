@@ -8,7 +8,7 @@
 		"lcov"
 	],
 	"repository": "https://github.com/Flutterando/flutter-coverage",
-	"description": "VSCeode Extension for view the code coverage per folder/file in the test view",
+	"description": "VSCode Extension for view the code coverage per folder/file in the test view",
 	"engines": {
 		"vscode": "^1.44.0"
 	},
